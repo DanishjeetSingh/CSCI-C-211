@@ -1,0 +1,26 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname lecture29) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; A Formula is one of:
+; - Number
+; - "x"
+; - (make-add Formula Formula)
+; - (make-mul Formula Formula)
+(define-struct add [first second])
+(define-struct mul [first second])
+
+(define formula1
+  (make-add (make-add (make-mul "x" "x")
+                      (make-mul 2 "x"))
+            1))
+
+; Exercise 1.
+
+; eval : Formula (Value Of x)
+
+(check-expect (eval formula1 10) 121)
+
+(define (eval f x)
+  (cond
+    [(add? (first f)) (+ (first f) (eval (rest f) x))]
+    [(mul? (first f)) (* (first f) (second f))]))

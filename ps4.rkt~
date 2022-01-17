@@ -1,0 +1,195 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname ps4) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; A Year is a non-negative integer
+; Examples:
+;   0
+;   1789
+;   2018
+; Non-examples:
+;   -5000
+;   "AD 2018"
+ 
+; A Month is one of:
+; - "January"
+; - "February"
+; - "March"
+; - "April"
+; - "May"
+; - "June"
+; - "July"
+; - "August"
+; - "September"
+; - "October"
+; - "November"
+; - "December"
+ 
+; A Day is an integer at least 1 but at most 31
+; Examples:
+;   1
+;   10
+;   31
+; Non-examples:
+;   32
+;   "today"
+
+
+; Exercise 1
+
+; next-month : Month -> Month
+; returns the month that comes after the given one
+
+;(define (next-month m) ...)
+ 
+(check-expect (next-month "September") "October")
+(check-expect (next-month "December") "January")
+
+;(define (next-month m)
+;  (cond [(string=? "January")   ...]
+;        [(string=? "February")  ...]
+;        [(string=? "March")     ...]
+;        [(string=? "April")     ...]
+;        [(string=? "May")       ...]
+;        [(string=? "June")      ...]
+;        [(string=? "July")      ...]
+;        [(string=? "August")    ...]
+;        [(string=? "September") ...]
+;        [(string=? "October")   ...]
+;        [(string=? "November")  ...]
+;        [(string=? "December")  ...]))
+
+(define (next-month m)
+  (cond [(string=? m "January")   "February"]
+        [(string=? m "February")  "March"]
+        [(string=? m "March")     "April"]
+        [(string=? m "April")     "May"]
+        [(string=? m "May")       "June"]
+        [(string=? m "June")      "July"]
+        [(string=? m "July")      "August"]
+        [(string=? m "August")    "September"]
+        [(string=? m "September") "October"]
+        [(string=? m "October")   "November"]
+        [(string=? m "November")  "December"]
+        [(string=? m "December")  "January"]))
+
+; Exercise 2
+
+; A Year is a non-negative integer
+; Examples:
+;   0
+;   1789
+;   2018
+; Non-examples:
+;   -5000
+;   "AD 2018"
+ 
+; A Month is one of:
+; - "January"
+; - "February"
+; - "March"
+; - "April"
+; - "May"
+; - "June"
+; - "July"
+; - "August"
+; - "September"
+; - "October"
+; - "November"
+; - "December"
+ 
+; A Day is an integer at least 1 but at most 31
+; Examples:
+;   1
+;   10
+;   31
+; Non-examples:
+;   32
+;   "today"
+
+; fall? : Month -> Boolean
+
+; decides whether the given month is between September and November
+
+; (define (fall? m) ...)
+
+(check-expect (fall? "September") true)
+(check-expect (fall? "October") true)
+(check-expect (fall? "November") true)
+(check-expect (fall? "December") false)
+
+(define (fall? m)
+  (cond[(string=? m "November")    true]
+       [(string=? m "September") true]
+       [(string=? m "October")   true]
+       [else false]))
+
+; Exercise 3
+
+; calendar : Year Month Day -> Image
+; returns an image of a date on a background
+
+; A MonthFormat is one of:
+; - "long"
+; - "short"
+ 
+; A DateOrder is one of:
+; - "MDY"
+; - "DMY"
+
+; format-month : Month MonthFormat -> String
+; abbreviates Month to three letters or not
+; (define (format-month m f) ...)
+ 
+(check-expect (format-month "November" "long") "November")
+(check-expect (format-month "November" "short") "Nov")
+
+(define (format-month m f)
+  (cond[(string=? f "long")
+        (cond [(string=? m "January")   m]
+              [(string=? m "February")  m]
+              [(string=? m "March")     m]
+              [(string=? m "April")     m]
+              [(string=? m "May")       m]
+              [(string=? m "June")      m]
+              [(string=? m "July")      m]
+              [(string=? m "August")    m]
+              [(string=? m "September") m]
+              [(string=? m "October")   m]
+              [(string=? m "November")  m]
+              [(string=? m "December")  m])]
+        [(string=? f "short")
+         (cond [(string=? m "January")  (substring m 0 3)]
+              [(string=? m "February")  (substring m 0 3)]
+              [(string=? m "March")     (substring m 0 3)]
+              [(string=? m "April")     (substring m 0 3)]
+              [(string=? m "May")       (substring m 0 3)]
+              [(string=? m "June")      (substring m 0 3)]
+              [(string=? m "July")      (substring m 0 3)]
+              [(string=? m "August")    (substring m 0 3)]
+              [(string=? m "September") (substring m 0 3)]
+              [(string=? m "October")   (substring m 0 3)]
+              [(string=? m "November")  (substring m 0 3)]
+              [(string=? m "December")  (substring m 0 3)])]))
+
+; Exercise 4
+
+; year-month-day->date : Year Month Day DateOrder MonthFormat -> String
+; produces a date as a string
+
+; (define (year-month-day->date y m d o f) ...)
+
+; given: 1936 "November" 12 "MDY" "long"   expect: "November 12, 1936"
+; given: 1936 "November" 12 "MDY" "short"  expect: "Nov 12, 1936"
+; given: 1936 "November" 12 "DMY" "long"   expect: "12 November 1936"
+; given: 1936 "November" 12 "DMY" "short"  expect: "12 Nov 1936"
+
+; (define (year-month-day->date y m d o f)
+;  (cond[(string=? o "MDY") (...format-month...)]
+;        [(string=? o "DMY") (... format-month...)]))
+
+(define (year-month-day->date y m d o f)
+  (cond[(string=? o "MDY")
+       (string-append (format-month m f) (number->string d) " , " (number->string y))]
+       [(string=? o "DMY")
+       (string-append d(format-month m f)y)]
+       ))

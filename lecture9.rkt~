@@ -1,0 +1,24 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname lecture9) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; A Point is (make-point Number Number)
+(define-struct point [x y])
+ 
+; A Person is (make-person String Number)
+(define-struct person [name age])
+
+; Exercise 1.
+
+;17 -> Number
+;
+;true -> Boolean
+;
+;"true" -> String
+;
+;"red" -> String
+;
+;(circle 10 "solid" "red") -> Image
+;
+;(make-point 3 4) -> Point
+;
+;(make-person "Dan" 22) -> Person

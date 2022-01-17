@@ -1,0 +1,128 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname lab9) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; A Step is one of:
+; - (make-draw Number)
+; - (make-turn Number)
+; - (make-fork Trip)
+; *Interpretation*: angle is how many degrees to turn left (counterclockwise)
+(define-struct draw [distance])
+(define-struct turn [angle])
+(define-struct fork [child])
+
+(define child-trip
+  (list (make-turn 30)
+        (make-draw 50)))
+(define y-trip
+  (list (make-draw 50)
+        (make-fork child-trip)
+        (make-turn -30)
+        (make-draw 50)))
+
+; Exercise 1.
+
+(define fork-trip1
+  (list (make-draw 10)
+        (make-fork child-trip)
+        (make-turn 90)
+        (make-draw 20)))
+
+(define fork-trip2
+  (list (make-draw 20)
+        (make-fork child-trip)
+        (make-turn 180)
+        (make-draw 30)))
+
+; Exercise 2.
+
+;(define (process-step s)
+;  (cond [(draw? s) ...]
+;        [(turn? s) ...]
+;        [(fork? s) ... (processs-trip s) ...]))
+;
+;(define (process-trip s)
+;  (cond [(empty? s) ...]
+;        [else ((process-step (first s)) (process-trip (rest s)))]))
+
+; Exercise 3.
+; yeeeeeeeeeee
+
+; Exercise 4.
+
+; step-length : Step -> Number
+; computes the length of a Step
+; (define (step-length) ...)
+
+(check-expect (step-length (make-draw 40)) 40)
+(check-expect (step-length (make-turn 90)) 0)
+(check-expect (step-length (make-fork child-trip)) 50)
+
+;(define (step-length s)
+;  (cond
+;    [(draw? s) ...]
+;    [(turn? s) ...]
+;    [(fork? s) ... (process-trip s) ...]))
+
+(define (step-length s)
+  (cond
+    [(draw? s) (draw-distance s)]
+    [(turn? s) 0]
+    [(fork? s) (trip-length (fork-child s))]))
+
+(define (trip-length s)
+  (cond
+    [(empty? s) 0]
+    [else (+ (step-length (first s)) (trip-length (rest s)))]))
+
+; Exercise 5.
+
+(check-expect (trip-length y-trip) 150)
+(check-expect (trip-length fork-trip1) 80)
+(check-expect (trip-length fork-trip2) 100)
+
+; Exercise 6.
+
+; move : Step Turtle -> Turtle
+; computes the Turtle after taking the step.
+; (define (move s t) ...)
+(define-struct turtle [x y dir])
+
+(check-expect (move (make-draw 50) (make-turtle 0 0 0)) (make-turtle 50 0 0))
+(check-expect (move (make-turn 90) (make-turtle 0 0 0)) (make-turtle 0 0 90))
+(check-expect (move (make-fork (list (make-draw 50) (make-turn 90))) (make-turtle 0 0 0)) (make-turtle 0 0 0))
+
+;(define (move s t)
+;  (cond
+;    [(draw? s) ...]
+;    [(turn? s) ...]
+;    [(fork? s) ...]))
+
+
+(define (move s t)
+  (cond [(draw? s) (make-turtle (+ (turtle-x t)
+                                   (* (cos (/ (* (turtle-dir t) pi)
+                                                           180))
+                                                   (draw-distance s)))
+                                (- (turtle-y t)
+                                   (* (sin (/ (* (turtle-dir t) pi)
+                                                           180))
+                                                   (draw-distance s)))
+                                (turtle-dir t))]
+        [(turn? s) (make-turtle (turtle-x t) (turtle-y t) (+ (turn-angle s)
+                                                             (turtle-dir t)))]
+        [(fork? s) t]))
+
+; Exercise 7.
+
+; draw-step : Step Turtle Image -> Image
+; draws a given Step taken by a given Turtle on a given Image.
+; (define (draw-step s t i) ...)
+
+(define scene (rectangle 100 100 "outline" "white"))
+
+(check-expect (draw-step (make-draw 50) (make-turtle 0 10 0) scene)
+              (scene+line scene 0 10 50 10 "red"))
+
+(define (draw-step s t i)
+  (scene+line i (turtle-x t) (turtle-y t) (turtle-x (move s t)) (turtle-y (move s t)) "red"))
+     
